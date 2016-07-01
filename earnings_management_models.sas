@@ -102,8 +102,6 @@ model tac = inv_at_l drevadj ppe roa_l; /* Kothari with ROA in model */
 by fyear sic2;
 run;
 
-
-
 /* Append discretionary accrual measures */
 
 /* Jones model */
@@ -173,14 +171,18 @@ quit;
 
 /* Kothari 2015, regression by industry with year and firm fixed effects */
 proc sort data=da.b_funda_wins; by sic2;run;
-proc glm data=da.b_funda_wins noprint;
-  class fyear gvkey;
+
+proc glm data=da.b_funda_wins;
+  class fyear gvkey; 
+  /* Regression output (for further inspection, not needed for residuals) */
+  ods output	ParameterEstimates  = work.params 
+	        	FitStatistics 		= work.fit
+            	NObs 				= work.obs;
   model tac = inv_at_l drevadj ppe netinc fyear gvkey /solution ;
   output out=da.d_model5 (keep=gvkey fyear DA_Kothari2015) residual=DA_Kothari2015 ;  
   by sic2;
 run;
 quit;
-
 
 /* Append Kothari 2015 measure */
 proc sql;
@@ -189,7 +191,7 @@ proc sql;
 quit;
 
 /* Winsorize discretionary accrual variables  */
-%let winsVars = DA_Jones DA_mJones DA_Kothari DA_pmKothari ABSDA_Jones  ABSDA_mJones  ABSDA_Kothari ABSDA_pmKothari  ; 
+%let winsVars = DA_Jones DA_mJones DA_Kothari DA_pmKothari ABSDA_Jones  ABSDA_mJones  ABSDA_Kothari ABSDA_pmKothari DA_Kothari2015 ABSDA_Kothari2015 ; 
 %winsor(dsetin=da.d_model6, dsetout=da.e_wins, /*byvar=, */ vars=&winsVars, type=winsor, pctl=1 99);
 
 /* Means, medians for key variables */
