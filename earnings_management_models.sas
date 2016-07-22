@@ -2,7 +2,7 @@
 	Earnings management models
 	Author: Joost Impink, March 2016
 	Models estimated:
-	- Jones model, 	tac = a0 + a1 1/TAt-1 + a2chSales + a3PPE + a4ROA + error.
+	- Jones model, 	tac = a0 + a1 1/TAt-1 + a2chSales + a3PPE + error.
 		- variable names DA_Jones ABSDA_Jones 
 	- Modified Jones model, as Jones model, but using chSales - chREC to compute fitted values.
 		- variable names DA_mJones ABSDA_mJones 
