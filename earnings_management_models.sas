@@ -169,6 +169,9 @@ proc sql;
 		having Difference = min(Difference); /* keep best match for size difference */		
 quit;
 
+/* drop possible multiple matches (with the same difference) in previous step */
+proc sort data=da.d_model4 nodupkey; by key;run;
+
 /* Kothari 2015, regression by industry with year and firm fixed effects */
 proc sort data=da.b_funda_wins; by sic2;run;
 
