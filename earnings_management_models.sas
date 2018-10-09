@@ -135,7 +135,7 @@ quit;
 proc sort data=da.a_funda_wins3; by fyear sic2;run;
 proc reg data=da.a_funda_wins3 noprint edf outest=da.c_parms;
 model tac = inv_at_l drev ppe /noint; /* Jones Model */
-model tac = inv_at_l drevadj ppe roa_l /noint; /* Kothari with ROA in model */     
+model tac = inv_at_l drevadj ppe roa_l ; /* Kothari with ROA in model - with intercept*/     
 model tac = inv_at_l drev ppe cfo dcfo dcfo_cfo /noint; /* Ball and Shivakumar 2006 */
 model tac = inv_at_l drev ppe cfo_l cfo cfo_n /noint; /* Dechow and Dichev, modified by McNichols */
 by fyear sic2;
@@ -180,7 +180,7 @@ proc sql;
  create table da.d_model3 as select a.*, b.DA_Kothari, abs (b.DA_Kothari) as ABSDA_Kothari	
 	from 
 		da.d_model2 a left join 
- 			( select a.key, a.tac - (  %do_over(values=inv_at_l drevadj ppe roa_l, between=%str(+), phrase=a.? * b.?) ) as DA_Kothari
+ 			( select a.key, a.tac - ( b.intercept + %do_over(values=inv_at_l drevadj ppe roa_l, between=%str(+), phrase=a.? * b.?) ) as DA_Kothari
 			 from da.d_model2 a left join da.c_parms b
 			 on a.sic2 = b.sic2 and a.fyear = b.fyear
 			 /* Model 2 */
@@ -254,7 +254,7 @@ proc glm data=da.a_funda_wins3;
   ods output	ParameterEstimates  = work.params 
 	        	FitStatistics 		= work.fit
             	NObs 				= work.obs;
-  model tac = inv_at_l drevadj ppe netinc fyear gvkey /solution noint ;
+  model tac = inv_at_l drevadj ppe netinc fyear gvkey /solution  ;
   output out=da.d_model7 (keep=gvkey fyear DA_Kothari2015) residual=DA_Kothari2015 ;  
   by sic2;
 run;
